@@ -133,7 +133,7 @@ void OpenNI2Driver::periodic()
     applyConfigToOpenNIDevice();
 
     // Register parameter callback
-    this->set_on_parameters_set_callback(std::bind(&OpenNI2Driver::paramCb, this, std::placeholders::_1));
+    this->add_on_set_parameters_callback(std::bind(&OpenNI2Driver::paramCb, this, std::placeholders::_1));
     initialized_ = true;
   }
 
@@ -495,7 +495,7 @@ void OpenNI2Driver::newIRFrameCallback(sensor_msgs::msg::Image::SharedPtr image)
     if (ir_subscribers_)
     {
       image->header.frame_id = ir_frame_id_;
-      image->header.stamp = rclcpp::Time(image->header.stamp) + rclcpp::Duration(ir_time_offset_ / 1e9);
+      image->header.stamp = rclcpp::Time(image->header.stamp) + rclcpp::Duration::from_seconds(ir_time_offset_);
 
       pub_ir_.publish(image, getIRCameraInfo(image->width, image->height, image->header.stamp));
     }
@@ -517,7 +517,7 @@ void OpenNI2Driver::newColorFrameCallback(sensor_msgs::msg::Image::SharedPtr ima
     if (color_subscribers_)
     {
       image->header.frame_id = color_frame_id_;
-      image->header.stamp = rclcpp::Time(image->header.stamp) + rclcpp::Duration(color_time_offset_ / 1e9);
+      image->header.stamp = rclcpp::Time(image->header.stamp) + rclcpp::Duration::from_seconds(color_time_offset_);
 
       pub_color_.publish(image, getColorCameraInfo(image->width, image->height, image->header.stamp));
     }
@@ -539,7 +539,7 @@ void OpenNI2Driver::newDepthFrameCallback(sensor_msgs::msg::Image::SharedPtr ima
 
     if (depth_raw_subscribers_||depth_subscribers_||projector_info_subscribers_)
     {
-      image->header.stamp = rclcpp::Time(image->header.stamp) + rclcpp::Duration(depth_time_offset_ / 1e9);
+      image->header.stamp = rclcpp::Time(image->header.stamp) + rclcpp::Duration::from_seconds(depth_time_offset_);
 
       if (z_offset_mm_ != 0)
       {
@@ -576,7 +576,7 @@ void OpenNI2Driver::newDepthFrameCallback(sensor_msgs::msg::Image::SharedPtr ima
 
       if (depth_subscribers_ )
       {
-        sensor_msgs::msg::Image::ConstPtr floating_point_image = rawToFloatingPointConversion(image);
+        sensor_msgs::msg::Image::ConstSharedPtr floating_point_image = rawToFloatingPointConversion(image);
         pub_depth_.publish(floating_point_image, cam_info);
       }
 
@@ -709,7 +709,7 @@ sensor_msgs::msg::CameraInfo::SharedPtr OpenNI2Driver::getProjectorCameraInfo(in
   return info;
 }
 
-std::string OpenNI2Driver::resolveDeviceURI(const std::string& device_id) throw(OpenNI2Exception)
+std::string OpenNI2Driver::resolveDeviceURI(const std::string& device_id)
 {
   // retrieve available device URIs, they look like this: "1d27/0601@1/5"
   // which is <vendor ID>/<product ID>@<bus number>/<device number>
@@ -1063,7 +1063,7 @@ bool OpenNI2Driver::lookupVideoMode(const std::string& mode, OpenNI2VideoMode& v
   return false;
 }
 
-sensor_msgs::msg::Image::ConstPtr OpenNI2Driver::rawToFloatingPointConversion(sensor_msgs::msg::Image::ConstPtr raw_image)
+sensor_msgs::msg::Image::ConstSharedPtr OpenNI2Driver::rawToFloatingPointConversion(sensor_msgs::msg::Image::ConstSharedPtr raw_image)
 {
   static const float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
