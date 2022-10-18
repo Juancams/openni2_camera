@@ -13,6 +13,9 @@ find_package(openni2_camera_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
+find_package(PCL 1.8 REQUIRED)
+find_package(pcl_conversions REQUIRED)
+find_package(pcl_ros REQUIRED)
 
 find_package(PkgConfig)
 pkg_check_modules(PC_OPENNI2 libopenni2)
@@ -48,6 +51,9 @@ ament_target_dependencies(openni2_wrapper
   sensor_msgs
   rclcpp
   rclcpp_components
+  PCL
+  pcl_conversions
+  pcl_ros
 )
 
 #add_executable(test_wrapper test/test_wrapper.cpp)
@@ -66,6 +72,7 @@ ament_target_dependencies(openni2_camera
   openni2_camera_msgs
   sensor_msgs
   rclcpp
+  pcl_ros
 )
 
 rclcpp_components_register_node(openni2_camera
