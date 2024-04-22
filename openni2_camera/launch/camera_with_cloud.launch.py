@@ -37,11 +37,12 @@ import os
 import launch
 import launch_ros.actions
 import launch_ros.descriptions
+from launch.substitutions import LaunchConfiguration
 
 
 def generate_launch_description():
 
-    namespace = '/camera'
+    namespace = LaunchConfiguration('namespace')
 
     container = launch_ros.actions.ComposableNodeContainer(
             name='container',
