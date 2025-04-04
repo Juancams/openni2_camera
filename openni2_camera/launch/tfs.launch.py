@@ -26,7 +26,7 @@ def generate_launch_description():
        "--roll", "-1.5707963267948966", "--yaw", "-1.5707963267948966"],
       ["--frame-id", [tf_prefix,"/",namespace,"_rgb_frame"],
        "--child-frame-id", [tf_prefix,"/",namespace,"_rgb_optical_frame"],
-       "--roll", "-1.5707963267948966", "--yaw", "-1.5707963267948966"],
+       "--roll", "-1.5707963267948966", "--yaw", "0.0"],
     ]
 
     tf_nodes = [Node(package='tf2_ros', executable='static_transform_publisher', output='screen', arguments=args) for args in tf_args]
